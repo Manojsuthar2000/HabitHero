@@ -145,8 +145,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/manojsuthar2000)
-- LinkedIn: [Your Name](https://www.linkedin.com/in/manoj-suthar-0a8a99171/)
+- GitHub: [@Manojsuthar2000](https://github.com/manojsuthar2000)
+- LinkedIn: [Manoj Suthar](https://www.linkedin.com/in/manoj-suthar-0a8a99171/)
 
 ## 🙏 Acknowledgments
 
