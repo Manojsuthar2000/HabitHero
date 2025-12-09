@@ -12,6 +12,7 @@ final class ProgressRingView: UIView {
     // MARK: - Properties
     private let progressLayer = CAShapeLayer()
     private let backgroundLayer = CAShapeLayer()
+    private var layersSetup = false
     
     private let progressLabel: UILabel = {
         let label = UILabel()
@@ -60,6 +61,9 @@ final class ProgressRingView: UIView {
     }
     
     private func setupLayers() {
+        guard !layersSetup else { return }
+        layersSetup = true
+        
         let center = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
         let radius = min(bounds.width, bounds.height) / 2 - 20
         

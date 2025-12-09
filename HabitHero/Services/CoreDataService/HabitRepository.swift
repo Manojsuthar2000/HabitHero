@@ -22,42 +22,6 @@ final class HabitRepository {
         let request: NSFetchRequest<HabitEntity> = HabitEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "createdDate", ascending: false)]
         
-        let count = try coreDataStack.context.count(for: request)
-        
-        // If no habits, return sample data
-        if count == 0 {
-            return [
-                Habit(
-                    title: "Morning Walk 🏃‍♂️",
-                    category: .fitness,
-                    frequency: .daily,
-                    streak: 5,
-                    isCompleted: false
-                ),
-                Habit(
-                    title: "Read 20 Pages 📚",
-                    category: .learning,
-                    frequency: .daily,
-                    streak: 3,
-                    isCompleted: true
-                ),
-                Habit(
-                    title: "Meditate 🧘‍♂️",
-                    category: .mindfulness,
-                    frequency: .daily,
-                    streak: 10,
-                    isCompleted: false
-                ),
-                Habit(
-                    title: "Drink Water 💧",
-                    category: .health,
-                    frequency: .daily,
-                    streak: 7,
-                    isCompleted: true
-                )
-            ]
-        }
-        
         let entities = try coreDataStack.context.fetch(request)
         return entities.compactMap { $0.toModel() }
     }

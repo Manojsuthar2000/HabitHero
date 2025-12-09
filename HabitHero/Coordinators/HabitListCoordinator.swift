@@ -7,9 +7,11 @@
 
 import UIKit
 
-final class HabitListCoordinator {
+final class HabitListCoordinator: Coordinator {
     
-    private let navigationController: UINavigationController
+    var navigationController: UINavigationController
+    var childCoordinators: [Coordinator] = []
+    private var addHabitCoordinator: AddHabitCoordinator?
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -25,12 +27,26 @@ final class HabitListCoordinator {
     }
     
     func showAddHabit() {
-        // TODO: Navigate to AddHabitViewController
-        print("Navigate to Add Habit")
+        let coordinator = AddHabitCoordinator(navigationController: navigationController)
+        coordinator.delegate = self
+        addHabitCoordinator = coordinator
+        coordinator.start()
     }
     
     func showHabitDetail(_ habit: Habit) {
         // TODO: Navigate to Habit Detail
         print("Show habit: \(habit.title)")
+    }
+}
+
+// MARK: - AddHabitCoordinatorDelegate
+extension HabitListCoordinator: AddHabitCoordinatorDelegate {
+    func addHabitCoordinatorDidFinish(_ coordinator: AddHabitCoordinator) {
+        addHabitCoordinator = nil
+        // Habit list will auto-refresh via NotificationCenter
+    }
+    
+    func addHabitCoordinatorDidCancel(_ coordinator: AddHabitCoordinator) {
+        addHabitCoordinator = nil
     }
 }
