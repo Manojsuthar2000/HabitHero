@@ -8,14 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		5523311C2EDAE37700ABE0B5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5523311A2EDAE37700ABE0B5 /* LICENSE */; };
+		556846A12EE882DD00635C92 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 556846A02EE882DD00635C92 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5523307F2EDAC99000ABE0B5 /* HabitHero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HabitHero.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		552330CD2EDAD13E00ABE0B5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		552330CE2EDAD15900ABE0B5 /* Architecture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Architecture.md; sourceTree = "<group>"; };
 		552330CF2EDAD17500ABE0B5 /* UIFlow.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UIFlow.md; sourceTree = "<group>"; };
 		5523311A2EDAE37700ABE0B5 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		556846A02EE882DD00635C92 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -53,6 +54,7 @@
 		552330762EDAC99000ABE0B5 = {
 			isa = PBXGroup;
 			children = (
+				556846A02EE882DD00635C92 /* README.md */,
 				552330C62EDAD04900ABE0B5 /* Documentation */,
 				552330812EDAC99000ABE0B5 /* HabitHero */,
 				552330802EDAC99000ABE0B5 /* Products */,
@@ -73,7 +75,6 @@
 				5523311A2EDAE37700ABE0B5 /* LICENSE */,
 				552330CF2EDAD17500ABE0B5 /* UIFlow.md */,
 				552330CE2EDAD15900ABE0B5 /* Architecture.md */,
-				552330CD2EDAD13E00ABE0B5 /* README.md */,
 			);
 			path = Documentation;
 			sourceTree = "<group>";
@@ -143,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5523311C2EDAE37700ABE0B5 /* LICENSE in Resources */,
+				556846A12EE882DD00635C92 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
