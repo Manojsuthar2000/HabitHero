@@ -70,7 +70,7 @@ final class HabitListViewController: UIViewController {
             progressRingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             progressRingView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             progressRingView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            progressRingView.heightAnchor.constraint(equalToConstant: 120),
+            progressRingView.heightAnchor.constraint(equalToConstant: 250),
             
             tableView.topAnchor.constraint(equalTo: progressRingView.bottomAnchor, constant: 20),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
