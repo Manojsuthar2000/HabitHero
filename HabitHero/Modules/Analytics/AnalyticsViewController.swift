@@ -152,7 +152,7 @@ final class AnalyticsViewController: UIViewController {
     private let emptySubtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Add some habits to start tracking your progress!"
-        label.font = Fonts.bodyMedium
+        label.font = Fonts.bodySmall
         label.textColor = .habitTextTertiary
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -408,7 +408,7 @@ final class AnalyticsViewController: UIViewController {
         if viewModel.categoryStats.isEmpty {
             let emptyLabel = UILabel()
             emptyLabel.text = "No categories yet"
-            emptyLabel.font = Fonts.bodyMedium
+            emptyLabel.font = Fonts.bodySmall
             emptyLabel.textColor = .habitTextTertiary
             emptyLabel.textAlignment = .center
             categoryStackView.addArrangedSubview(emptyLabel)
@@ -426,7 +426,7 @@ final class AnalyticsViewController: UIViewController {
         if viewModel.topHabits.isEmpty {
             let emptyLabel = UILabel()
             emptyLabel.text = "Complete habits to build streaks!"
-            emptyLabel.font = Fonts.bodyMedium
+            emptyLabel.font = Fonts.bodySmall
             emptyLabel.textColor = .habitTextTertiary
             emptyLabel.textAlignment = .center
             topHabitsStackView.addArrangedSubview(emptyLabel)

@@ -18,6 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.backgroundColor = .systemBackground
         
+        // Apply saved appearance mode
+        window?.overrideUserInterfaceStyle = SettingsManager.shared.appearanceMode.userInterfaceStyle
+        
         appCoordinator = AppCoordinator(window: window!)
         appCoordinator?.start()
     }

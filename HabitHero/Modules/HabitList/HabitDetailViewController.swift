@@ -127,7 +127,7 @@ final class HabitDetailViewController: UIViewController {
     
     private let notesLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.bodyMedium
+        label.font = Fonts.bodySmall
         label.textColor = .habitTextPrimary
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -347,7 +347,7 @@ final class HabitDetailViewController: UIViewController {
         
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.font = Fonts.bodyMedium
+        titleLabel.font = Fonts.bodySmall
         titleLabel.textColor = .habitTextSecondary
         
         let valueLabel = UILabel()

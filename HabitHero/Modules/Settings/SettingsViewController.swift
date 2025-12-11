@@ -56,6 +56,11 @@ final class SettingsViewController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
     // MARK: - Setup
     private func setupUI() {
         title = "Settings"
@@ -79,6 +84,8 @@ final class SettingsViewController: UIViewController {
         switch (section, row) {
         case (0, 0): // Notifications
             openAppSettings()
+        case (0, 1): // Appearance
+            showAppearanceSettings()
         case (1, 2): // Clear All Data
             showClearDataAlert()
         case (2, 0): // About
@@ -88,6 +95,11 @@ final class SettingsViewController: UIViewController {
         default:
             showComingSoonAlert(for: item.title)
         }
+    }
+    
+    private func showAppearanceSettings() {
+        let appearanceVC = AppearanceViewController()
+        navigationController?.pushViewController(appearanceVC, animated: true)
     }
     
     private func openAppSettings() {
@@ -175,6 +187,12 @@ extension SettingsViewController: UITableViewDataSource {
         config.text = item.title
         config.image = UIImage(systemName: item.icon)
         config.imageProperties.tintColor = item.color
+        
+        // Show current value for Appearance
+        if indexPath.section == 0 && indexPath.row == 1 {
+            config.secondaryText = SettingsManager.shared.appearanceMode.title
+            config.secondaryTextProperties.color = .habitTextSecondary
+        }
         
         cell.contentConfiguration = config
         cell.accessoryType = .disclosureIndicator
