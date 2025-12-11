@@ -110,6 +110,8 @@ class AIHabitSuggestionView: UIView {
     }()
     
     private var quickSuggestions: [QuickSuggestion] = []
+    private var dividerTopToButtonConstraint: NSLayoutConstraint!
+    private var dividerTopToSuggestionConstraint: NSLayoutConstraint!
     
     // MARK: - Init
     init() {
@@ -142,6 +144,12 @@ class AIHabitSuggestionView: UIView {
         containerView.addSubview(quickSuggestionsLabel)
         containerView.addSubview(quickSuggestionsStackView)
         
+        dividerTopToButtonConstraint = dividerView.topAnchor.constraint(equalTo: getSuggestionButton.bottomAnchor, constant: 20)
+        dividerTopToSuggestionConstraint = dividerView.topAnchor.constraint(equalTo: suggestionLabel.bottomAnchor, constant: 20)
+        
+        dividerTopToButtonConstraint.isActive = true
+        dividerTopToSuggestionConstraint.isActive = false
+        
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: topAnchor),
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -171,7 +179,6 @@ class AIHabitSuggestionView: UIView {
             suggestionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             suggestionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            dividerView.topAnchor.constraint(equalTo: suggestionLabel.isHidden ? getSuggestionButton.bottomAnchor : suggestionLabel.bottomAnchor, constant: 20),
             dividerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             dividerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             dividerView.heightAnchor.constraint(equalToConstant: 1),
@@ -213,6 +220,9 @@ class AIHabitSuggestionView: UIView {
     func showSuggestion(_ suggestion: String) {
         suggestionLabel.text = suggestion
         suggestionLabel.isHidden = false
+        
+        dividerTopToButtonConstraint.isActive = false
+        dividerTopToSuggestionConstraint.isActive = true
         
         // Animate appearance
         suggestionLabel.alpha = 0

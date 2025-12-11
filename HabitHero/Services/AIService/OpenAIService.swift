@@ -1,21 +1,29 @@
 //
-//  OpenAIService.swift
+//  GroqService.swift
 //  HabitHero
 //
-//  Created by Manoj Suthar on 29/11/25.
+//  FREE alternative to OpenAI/Gemini with generous rate limits
+//  Get your free API key at: https://console.groq.com/keys
 //
 
 import Foundation
 
-final class OpenAIService {
+final class GroqService {
     
     // MARK: - Singleton
-    static let shared = OpenAIService()
+    static let shared = GroqService()
     
     // MARK: - Properties
-    private let apiKey = APIKeys.openAIKey
-    private let baseURL = "https://api.openai.com/v1"
+    private let apiKey = APIKeys.groqKey  // Get free key at https://console.groq.com/keys
+    private let baseURL = "https://api.groq.com/openai/v1"
     private let session: URLSession
+    
+    // Available models (all FREE):
+    // - "llama-3.3-70b-versatile"  (Best quality, 30 RPM)
+    // - "llama-3.1-8b-instant"     (Fastest, 30 RPM)
+    // - "mixtral-8x7b-32768"       (Good balance, 30 RPM)
+    // - "gemma2-9b-it"             (Google's Gemma, 30 RPM)
+    private let model = "llama-3.3-70b-versatile"
     
     // MARK: - Init
     private init() {
@@ -44,73 +52,73 @@ final class OpenAIService {
         - Related to their goal
         - Include a brief explanation of benefits
         
-        Format: 
+        Format:
         Habit: [specific habit]
         Frequency: [daily/weekly]
         Duration: [time if applicable]
         Benefits: [1-2 sentences]
         """
         
-        let requestBody = OpenAIRequest(
-            model: "gpt-3.5-turbo",
-            messages: [
-                Message(role: "system", content: "You are a helpful habit coach."),
-                Message(role: "user", content: prompt)
+        // Groq uses OpenAI-compatible API format!
+        let requestBody: [String: Any] = [
+            "model": model,
+            "messages": [
+                ["role": "system", "content": "You are a helpful habit coach."],
+                ["role": "user", "content": prompt]
             ],
-            temperature: 0.7,
-            maxTokens: 150
-        )
+            "temperature": 0.7,
+            "max_tokens": 150
+        ]
         
-        request.httpBody = try JSONEncoder().encode(requestBody)
+        request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         
         let (data, response) = try await session.data(for: request)
         
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
+        // Debug: Print response for troubleshooting
+        if let errorString = String(data: data, encoding: .utf8) {
+            print("Groq Response: \(errorString)")
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
             throw AIError.invalidResponse
         }
         
-        let openAIResponse = try JSONDecoder().decode(OpenAIResponse.self, from: data)
-        guard let suggestion = openAIResponse.choices.first?.message.content else {
+        // Handle specific error codes
+        switch httpResponse.statusCode {
+        case 200...299:
+            break // Success
+        case 429:
+            throw AIError.rateLimitExceeded
+        case 401, 403:
+            throw AIError.invalidAPIKey
+        case 400:
+            throw AIError.badRequest
+        default:
+            throw AIError.invalidResponse
+        }
+        
+        // Parse response (OpenAI-compatible format)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let choices = json["choices"] as? [[String: Any]],
+              let firstChoice = choices.first,
+              let message = firstChoice["message"] as? [String: Any],
+              let content = message["content"] as? String else {
             throw AIError.noSuggestion
         }
         
-        return suggestion
+        return content
     }
 }
 
-// MARK: - Models
-struct OpenAIRequest: Codable {
-    let model: String
-    let messages: [Message]
-    let temperature: Double
-    let maxTokens: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case model, messages, temperature
-        case maxTokens = "max_tokens"
-    }
-}
-
-struct Message: Codable {
-    let role: String
-    let content: String
-}
-
-struct OpenAIResponse: Codable {
-    let choices: [Choice]
-}
-
-struct Choice: Codable {
-    let message: Message
-}
-
-// MARK: - Errors
+// MARK: - Errors (shared with other services)
 enum AIError: LocalizedError {
     case invalidURL
     case invalidResponse
     case noSuggestion
     case networkError
+    case rateLimitExceeded
+    case invalidAPIKey
+    case badRequest
     
     var errorDescription: String? {
         switch self {
@@ -122,6 +130,29 @@ enum AIError: LocalizedError {
             return "Could not generate suggestion"
         case .networkError:
             return "Network connection error. Please check your internet."
+        case .rateLimitExceeded:
+            return "API rate limit exceeded. Please try again later."
+        case .invalidAPIKey:
+            return "Invalid API key. Please check your configuration."
+        case .badRequest:
+            return "Bad request. Please check your input."
         }
     }
 }
+
+/*
+ GROQ FREE TIER BENEFITS:
+ ========================
+ - 30 requests per minute (RPM)
+ - 15,000 tokens per minute
+ - NO daily limits!
+ - Multiple models available
+ - OpenAI-compatible API (easy migration)
+ - Extremely fast inference (~300 tokens/sec)
+ 
+ Get your FREE API key:
+ https://console.groq.com/keys
+ 
+ Documentation:
+ https://console.groq.com/docs/quickstart
+ */

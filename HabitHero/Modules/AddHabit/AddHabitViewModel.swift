@@ -32,13 +32,13 @@ final class AddHabitViewModel {
     
     // MARK: - Dependencies
     private let habitRepository: HabitRepository
-    private let aiService: OpenAIService
+    private let aiService: GroqService
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
     init(
         habitRepository: HabitRepository = HabitRepository(),
-        aiService: OpenAIService = .shared
+        aiService: GroqService = .shared
     ) {
         self.habitRepository = habitRepository
         self.aiService = aiService
