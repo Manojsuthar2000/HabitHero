@@ -12,6 +12,9 @@ class AIHabitSuggestionView: UIView {
     // MARK: - Properties
     var onGetSuggestion: ((String) -> Void)?
     var onQuickSuggestionSelected: ((QuickSuggestion) -> Void)?
+    var onAISuggestionSelected: ((AISuggestion) -> Void)?
+    
+    private var currentAISuggestion: AISuggestion?
     
     // MARK: - UI Components
     private let containerView: UIView = {
@@ -75,14 +78,79 @@ class AIHabitSuggestionView: UIView {
         return button
     }()
     
-    private let suggestionLabel: UILabel = {
+    private let suggestionCardView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .habitSecondaryBackground
+        view.layer.cornerRadius = 12
+        view.layer.borderWidth = 2
+        view.layer.borderColor = Colors.primary.cgColor
+        view.isHidden = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private let suggestionContentStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.alignment = .center
+        stack.isUserInteractionEnabled = false
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    private let suggestionIconView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = Colors.primary
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private let suggestionTextStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    private let suggestionTitleLabel: UILabel = {
         let label = UILabel()
-        label.font = Fonts.bodySmall
+        label.font = Fonts.bodyMedium
         label.textColor = .habitTextPrimary
-        label.numberOfLines = 0
-        label.isHidden = true
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    private let suggestionDescLabel: UILabel = {
+        let label = UILabel()
+        label.font = Fonts.caption1
+        label.textColor = .habitTextSecondary
+        label.numberOfLines = 2
+        return label
+    }()
+    
+    private let suggestionBadge: UILabel = {
+        let label = UILabel()
+        label.text = "AI"
+        label.font = Fonts.caption2
+        label.textColor = .white
+        label.backgroundColor = Colors.primary
+        label.layer.cornerRadius = 4
+        label.layer.masksToBounds = true
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private let suggestionChevron: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "chevron.right")
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .habitTextTertiary
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
     }()
     
     private let dividerView: UIView = {
@@ -139,13 +207,25 @@ class AIHabitSuggestionView: UIView {
         containerView.addSubview(subtitleLabel)
         containerView.addSubview(inputTextField)
         containerView.addSubview(getSuggestionButton)
-        containerView.addSubview(suggestionLabel)
+        
+        // Setup suggestion card
+        suggestionTextStack.addArrangedSubview(suggestionTitleLabel)
+        suggestionTextStack.addArrangedSubview(suggestionDescLabel)
+        
+        suggestionContentStack.addArrangedSubview(suggestionIconView)
+        suggestionContentStack.addArrangedSubview(suggestionTextStack)
+        suggestionContentStack.addArrangedSubview(suggestionChevron)
+        
+        suggestionCardView.addSubview(suggestionContentStack)
+        suggestionCardView.addSubview(suggestionBadge)
+        containerView.addSubview(suggestionCardView)
+        
         containerView.addSubview(dividerView)
         containerView.addSubview(quickSuggestionsLabel)
         containerView.addSubview(quickSuggestionsStackView)
         
         dividerTopToButtonConstraint = dividerView.topAnchor.constraint(equalTo: getSuggestionButton.bottomAnchor, constant: 20)
-        dividerTopToSuggestionConstraint = dividerView.topAnchor.constraint(equalTo: suggestionLabel.bottomAnchor, constant: 20)
+        dividerTopToSuggestionConstraint = dividerView.topAnchor.constraint(equalTo: suggestionCardView.bottomAnchor, constant: 20)
         
         dividerTopToButtonConstraint.isActive = true
         dividerTopToSuggestionConstraint.isActive = false
@@ -175,9 +255,27 @@ class AIHabitSuggestionView: UIView {
             getSuggestionButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             getSuggestionButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
             
-            suggestionLabel.topAnchor.constraint(equalTo: getSuggestionButton.bottomAnchor, constant: 16),
-            suggestionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            suggestionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            // Suggestion Card
+            suggestionCardView.topAnchor.constraint(equalTo: getSuggestionButton.bottomAnchor, constant: 16),
+            suggestionCardView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            suggestionCardView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            suggestionCardView.heightAnchor.constraint(greaterThanOrEqualToConstant: 70),
+            
+            suggestionContentStack.topAnchor.constraint(equalTo: suggestionCardView.topAnchor, constant: 12),
+            suggestionContentStack.leadingAnchor.constraint(equalTo: suggestionCardView.leadingAnchor, constant: 16),
+            suggestionContentStack.trailingAnchor.constraint(equalTo: suggestionCardView.trailingAnchor, constant: -16),
+            suggestionContentStack.bottomAnchor.constraint(equalTo: suggestionCardView.bottomAnchor, constant: -12),
+            
+            suggestionIconView.widthAnchor.constraint(equalToConstant: 32),
+            suggestionIconView.heightAnchor.constraint(equalToConstant: 32),
+            
+            suggestionChevron.widthAnchor.constraint(equalToConstant: 16),
+            suggestionChevron.heightAnchor.constraint(equalToConstant: 16),
+            
+            suggestionBadge.topAnchor.constraint(equalTo: suggestionCardView.topAnchor, constant: -6),
+            suggestionBadge.trailingAnchor.constraint(equalTo: suggestionCardView.trailingAnchor, constant: -12),
+            suggestionBadge.widthAnchor.constraint(equalToConstant: 24),
+            suggestionBadge.heightAnchor.constraint(equalToConstant: 16),
             
             dividerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             dividerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
@@ -194,6 +292,11 @@ class AIHabitSuggestionView: UIView {
         ])
         
         getSuggestionButton.addTarget(self, action: #selector(getSuggestionTapped), for: .touchUpInside)
+        
+        // Add tap gesture to suggestion card
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(suggestionCardTapped))
+        suggestionCardView.addGestureRecognizer(tapGesture)
+        suggestionCardView.isUserInteractionEnabled = true
     }
     
     // MARK: - Actions
@@ -217,16 +320,58 @@ class AIHabitSuggestionView: UIView {
         getSuggestionButton.setLoading(false)
     }
     
-    func showSuggestion(_ suggestion: String) {
-        suggestionLabel.text = suggestion
-        suggestionLabel.isHidden = false
+    func showSuggestion(_ suggestion: AISuggestion) {
+        currentAISuggestion = suggestion
+        
+        // Configure the suggestion card
+        suggestionTitleLabel.text = suggestion.habitName
+        suggestionDescLabel.text = suggestion.benefits
+        suggestionIconView.image = UIImage(systemName: suggestion.icon)
+        suggestionIconView.tintColor = suggestion.category.color
+        suggestionCardView.layer.borderColor = suggestion.category.color.cgColor
+        suggestionBadge.backgroundColor = suggestion.category.color
+        
+        suggestionCardView.isHidden = false
         
         dividerTopToButtonConstraint.isActive = false
         dividerTopToSuggestionConstraint.isActive = true
         
         // Animate appearance
-        suggestionLabel.alpha = 0
-        suggestionLabel.fadeIn(duration: 0.3)
+        suggestionCardView.alpha = 0
+        suggestionCardView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5) {
+            self.suggestionCardView.alpha = 1
+            self.suggestionCardView.transform = .identity
+            self.layoutIfNeeded()
+        }
+    }
+    
+    func hideSuggestion() {
+        currentAISuggestion = nil
+        suggestionCardView.isHidden = true
+        
+        dividerTopToSuggestionConstraint.isActive = false
+        dividerTopToButtonConstraint.isActive = true
+    }
+    
+    @objc private func suggestionCardTapped() {
+        guard let suggestion = currentAISuggestion else { return }
+        
+        // Animate tap
+        UIView.animate(withDuration: 0.1, animations: {
+            self.suggestionCardView.transform = CGAffineTransform(scaleX: 0.97, y: 0.97)
+        }) { _ in
+            UIView.animate(withDuration: 0.1) {
+                self.suggestionCardView.transform = .identity
+            }
+        }
+        
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
+        onAISuggestionSelected?(suggestion)
     }
     
     func setQuickSuggestions(_ suggestions: [QuickSuggestion]) {

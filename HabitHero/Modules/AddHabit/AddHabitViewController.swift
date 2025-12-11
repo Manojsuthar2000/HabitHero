@@ -219,6 +219,8 @@ final class AddHabitViewController: UIViewController {
             .sink { [weak self] suggestion in
                 if let suggestion = suggestion {
                     self?.aiSuggestionView.showSuggestion(suggestion)
+                } else {
+                    self?.aiSuggestionView.hideSuggestion()
                 }
             }
             .store(in: &cancellables)
@@ -237,6 +239,11 @@ final class AddHabitViewController: UIViewController {
         
         aiSuggestionView.onQuickSuggestionSelected = { [weak self] suggestion in
             self?.viewModel.applyQuickSuggestion(suggestion)
+            self?.updateUIFromViewModel()
+        }
+        
+        aiSuggestionView.onAISuggestionSelected = { [weak self] suggestion in
+            self?.viewModel.applyAISuggestion(suggestion)
             self?.updateUIFromViewModel()
         }
     }

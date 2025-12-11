@@ -20,7 +20,7 @@ final class AddHabitViewModel {
     
     @Published var isLoading: Bool = false
     @Published var error: Error?
-    @Published var aiSuggestion: String?
+    @Published var aiSuggestion: AISuggestion?
     @Published var isLoadingAISuggestion: Bool = false
     
     // MARK: - Validation
@@ -113,7 +113,7 @@ final class AddHabitViewModel {
         aiSuggestion = nil
         
         do {
-            let suggestion = try await aiService.generateHabitSuggestion(for: goal)
+            let suggestion = try await aiService.generateHabitSuggestionParsed(for: goal)
             await MainActor.run {
                 self.aiSuggestion = suggestion
                 self.isLoadingAISuggestion = false
@@ -124,6 +124,14 @@ final class AddHabitViewModel {
                 self.isLoadingAISuggestion = false
             }
         }
+    }
+    
+    // MARK: - Apply AI Suggestion
+    func applyAISuggestion(_ suggestion: AISuggestion) {
+        habitName = suggestion.habitName
+        selectedCategory = suggestion.category
+        selectedFrequency = suggestion.frequency
+        notes = suggestion.benefits
     }
     
     // MARK: - Quick Suggestions

@@ -34,8 +34,18 @@ final class HabitListCoordinator: Coordinator {
     }
     
     func showHabitDetail(_ habit: Habit) {
-        // TODO: Navigate to Habit Detail
-        print("Show habit: \(habit.title)")
+        let detailVC = HabitDetailViewController(habit: habit)
+        
+        detailVC.onHabitUpdated = { [weak self] _ in
+            // Post notification to refresh habit list
+            NotificationCenter.default.post(name: .habitUpdated, object: nil)
+        }
+        
+        detailVC.onHabitDeleted = { [weak self] in
+            NotificationCenter.default.post(name: .habitDeleted, object: nil)
+        }
+        
+        navigationController.pushViewController(detailVC, animated: true)
     }
 }
 
