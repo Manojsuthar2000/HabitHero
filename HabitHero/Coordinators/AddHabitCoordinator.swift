@@ -19,6 +19,8 @@ final class AddHabitCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     weak var delegate: AddHabitCoordinatorDelegate?
     
+    private var addHabitViewController: AddHabitViewController?
+    
     // MARK: - Init
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -43,16 +45,45 @@ final class AddHabitCoordinator: Coordinator {
         navigationController.present(addHabitNav, animated: true)
     }
     
+    /// Start as a tab (embedded in tab bar)
+    func startAsTab() {
+        let viewModel = AddHabitViewModel()
+        let viewController = AddHabitViewController(viewModel: viewModel)
+        viewController.coordinator = self
+        viewController.isTabMode = true
+        viewController.title = "Add Habit"
+        
+        addHabitViewController = viewController
+        navigationController.setViewControllers([viewController], animated: false)
+    }
+    
+    /// Reset the form for reuse
+    func resetForm() {
+        addHabitViewController?.resetForm()
+    }
+    
     // MARK: - Navigation
     func didFinishAddingHabit() {
-        navigationController.dismiss(animated: true) {
-            self.delegate?.addHabitCoordinatorDidFinish(self)
+        if addHabitViewController?.isTabMode == true {
+            // In tab mode, notify delegate (which will switch tabs)
+            delegate?.addHabitCoordinatorDidFinish(self)
+        } else {
+            // In modal mode, dismiss
+            navigationController.dismiss(animated: true) {
+                self.delegate?.addHabitCoordinatorDidFinish(self)
+            }
         }
     }
     
     func didCancelAddingHabit() {
-        navigationController.dismiss(animated: true) {
-            self.delegate?.addHabitCoordinatorDidCancel(self)
+        if addHabitViewController?.isTabMode == true {
+            // In tab mode, notify delegate (which will switch tabs)
+            delegate?.addHabitCoordinatorDidCancel(self)
+        } else {
+            // In modal mode, dismiss
+            navigationController.dismiss(animated: true) {
+                self.delegate?.addHabitCoordinatorDidCancel(self)
+            }
         }
     }
 }

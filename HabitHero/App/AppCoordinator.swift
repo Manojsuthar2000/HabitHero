@@ -14,8 +14,12 @@ final class AppCoordinator {
     
     // Child Coordinators
     private var habitListCoordinator: HabitListCoordinator?
+    private var addHabitCoordinator: AddHabitCoordinator?
     private var analyticsCoordinator: AnalyticsCoordinator?
     private var settingsCoordinator: SettingsCoordinator?
+    
+    // Add Habit Navigation Controller (exposed for tab switching)
+    private var addHabitNavController: UINavigationController?
     
     init(window: UIWindow) {
         self.window = window
@@ -40,9 +44,24 @@ final class AppCoordinator {
             selectedImage: UIImage(systemName: "checkmark.circle.fill")
         )
         habitListCoordinator = HabitListCoordinator(navigationController: habitsNavController)
+        habitListCoordinator?.onAddHabitTapped = { [weak self] in
+            self?.switchToAddTab()
+        }
         habitListCoordinator?.start()
         
-        // 2. Analytics Tab
+        // 2. Add Habit Tab
+        let addNavController = UINavigationController()
+        addNavController.tabBarItem = UITabBarItem(
+            title: "Add",
+            image: UIImage(systemName: "plus.circle"),
+            selectedImage: UIImage(systemName: "plus.circle.fill")
+        )
+        addHabitNavController = addNavController
+        addHabitCoordinator = AddHabitCoordinator(navigationController: addNavController)
+        addHabitCoordinator?.delegate = self
+        addHabitCoordinator?.startAsTab()
+        
+        // 3. Analytics Tab
         let analyticsNavController = UINavigationController()
         analyticsNavController.tabBarItem = UITabBarItem(
             title: "Analytics",
@@ -52,7 +71,7 @@ final class AppCoordinator {
         analyticsCoordinator = AnalyticsCoordinator(navigationController: analyticsNavController)
         analyticsCoordinator?.start()
         
-        // 3. Settings Tab
+        // 4. Settings Tab
         let settingsNavController = UINavigationController()
         settingsNavController.tabBarItem = UITabBarItem(
             title: "Settings",
@@ -65,9 +84,14 @@ final class AppCoordinator {
         // Set ViewControllers
         tabBarController.viewControllers = [
             habitsNavController,
+            addNavController,
             analyticsNavController,
             settingsNavController
         ]
+    }
+    
+    private func switchToAddTab() {
+        tabBarController.selectedIndex = 1
     }
     
     private func configureTabBarAppearance() {
@@ -90,5 +114,22 @@ final class AppCoordinator {
         if #available(iOS 15.0, *) {
             tabBarController.tabBar.scrollEdgeAppearance = appearance
         }
+    }
+}
+
+// MARK: - AddHabitCoordinatorDelegate
+extension AppCoordinator: AddHabitCoordinatorDelegate {
+    func addHabitCoordinatorDidFinish(_ coordinator: AddHabitCoordinator) {
+        // Switch back to Habits tab after saving
+        tabBarController.selectedIndex = 0
+        // Reset the Add Habit form for next use
+        addHabitCoordinator?.resetForm()
+    }
+    
+    func addHabitCoordinatorDidCancel(_ coordinator: AddHabitCoordinator) {
+        // Switch back to Habits tab on cancel
+        tabBarController.selectedIndex = 0
+        // Reset the Add Habit form for next use
+        addHabitCoordinator?.resetForm()
     }
 }

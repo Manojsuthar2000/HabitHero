@@ -191,4 +191,10 @@ class ReminderTimePickerView: UIView {
     func getReminderTime() -> Date {
         return datePicker.date
     }
+    
+    func reset() {
+        toggleSwitch.isOn = false
+        isReminderEnabled = false
+        datePicker.date = Date()
+    }
 }

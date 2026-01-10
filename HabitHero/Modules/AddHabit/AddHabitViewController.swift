@@ -15,6 +15,9 @@ final class AddHabitViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     weak var coordinator: AddHabitCoordinator?
     
+    /// Flag to indicate if this view controller is used as a tab (vs modal)
+    var isTabMode: Bool = false
+    
     // MARK: - UI Components
     private let scrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -143,6 +146,20 @@ final class AddHabitViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.heightAnchor.constraint(equalToConstant: 1).isActive = true
         return view
+    }
+    
+    // MARK: - Public Methods
+    
+    /// Reset the form to initial state
+    func resetForm() {
+        viewModel.resetForm()
+        nameTextField.text = ""
+        notesTextField.text = ""
+        categoryPicker.setSelectedCategory(.health)
+        frequencyPicker.setSelectedFrequency(.daily)
+        reminderPicker.reset()
+        aiSuggestionView.hideSuggestion()
+        scrollView.setContentOffset(.zero, animated: false)
     }
     
     // MARK: - Bindings

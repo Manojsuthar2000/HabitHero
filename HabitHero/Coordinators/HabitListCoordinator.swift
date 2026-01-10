@@ -13,6 +13,9 @@ final class HabitListCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     private var addHabitCoordinator: AddHabitCoordinator?
     
+    // Callback to switch to Add tab
+    var onAddHabitTapped: (() -> Void)?
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
@@ -27,10 +30,8 @@ final class HabitListCoordinator: Coordinator {
     }
     
     func showAddHabit() {
-        let coordinator = AddHabitCoordinator(navigationController: navigationController)
-        coordinator.delegate = self
-        addHabitCoordinator = coordinator
-        coordinator.start()
+        // Switch to Add tab instead of presenting modally
+        onAddHabitTapped?()
     }
     
     func showHabitDetail(_ habit: Habit) {
